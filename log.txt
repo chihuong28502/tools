@@ -61,24 +61,24 @@
 
 09891 09892
 
-BASE_PHONE=0900000579 pm2 start simple-bot.js --name bot_090
-BASE_PHONE=0910000646 pm2 start simple-bot.js --name bot_091
-BASE_PHONE=0920000519 pm2 start simple-bot.js --name bot_092
-BASE_PHONE=0930000497 pm2 start simple-bot.js --name bot_093
-BASE_PHONE=0940000561 pm2 start simple-bot.js --name bot_094 
-BASE_PHONE=0950000562 pm2 start simple-bot.js --name bot_095 
-BASE_PHONE=0960000533 pm2 start simple-bot.js --name bot_096 
-BASE_PHONE=0970000542 pm2 start simple-bot.js --name bot_097 
-BASE_PHONE=0980000786 pm2 start simple-bot.js --name bot_098 
-BASE_PHONE=0990000576 pm2 start simple-bot.js --name bot_099 
+BASE_PHONE=0900000000 pm2 start simple-bot.js --name bot_090
+BASE_PHONE=0910000000 pm2 start simple-bot.js --name bot_091
+BASE_PHONE=0920000000 pm2 start simple-bot.js --name bot_092
+BASE_PHONE=0930000000 pm2 start simple-bot.js --name bot_093
+BASE_PHONE=0940000000 pm2 start simple-bot.js --name bot_094 
+BASE_PHONE=0950000000 pm2 start simple-bot.js --name bot_095 
+BASE_PHONE=0960000000 pm2 start simple-bot.js --name bot_096 
+BASE_PHONE=0970000000 pm2 start simple-bot.js --name bot_097 
+BASE_PHONE=0980000000 pm2 start simple-bot.js --name bot_098 
+BASE_PHONE=0990000000 pm2 start simple-bot.js --name bot_099 
 
-BASE_PHONE=0300000609 pm2 start simple-bot.js --name bot_030
-BASE_PHONE=0310000514 pm2 start simple-bot.js --name bot_031
-BASE_PHONE=0320000556 pm2 start simple-bot.js --name bot_032
-BASE_PHONE=0330000550 pm2 start simple-bot.js --name bot_033
-BASE_PHONE=0340000553 pm2 start simple-bot.js --name bot_034
-BASE_PHONE=0350000555 pm2 start simple-bot.js --name bot_035
-BASE_PHONE=0360000541 pm2 start simple-bot.js --name bot_036
-BASE_PHONE=0370000554 pm2 start simple-bot.js --name bot_037
-BASE_PHONE=0380000547 pm2 start simple-bot.js --name bot_038
-BASE_PHONE=0390000553 pm2 start simple-bot.js --name bot_039
+BASE_PHONE=0300000000 pm2 start simple-bot.js --name bot_030
+BASE_PHONE=0310000000 pm2 start simple-bot.js --name bot_031
+BASE_PHONE=0320000000 pm2 start simple-bot.js --name bot_032
+BASE_PHONE=0330000000 pm2 start simple-bot.js --name bot_033
+BASE_PHONE=0340000000 pm2 start simple-bot.js --name bot_034
+BASE_PHONE=0350000000 pm2 start simple-bot.js --name bot_035
+BASE_PHONE=0360000000 pm2 start simple-bot.js --name bot_036
+BASE_PHONE=0370000000 pm2 start simple-bot.js --name bot_037
+BASE_PHONE=0380000000 pm2 start simple-bot.js --name bot_038
+BASE_PHONE=0390000000 pm2 start simple-bot.js --name bot_039

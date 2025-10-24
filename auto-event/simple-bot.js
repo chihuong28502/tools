@@ -354,12 +354,44 @@ class SimpleGameBot {
   /**
    * Chạy vô hạn
    */
+  /**
+   * Chạy vô hạn (tiếp tục từ account cuối cùng nếu có)
+   */
   async runForever(basePhone) {
     console.log(`🔄 Bắt đầu chạy vô hạn từ số: ${basePhone}\n`);
 
+    // 🧩 Kiểm tra file account.json
+    let lastPhone = null;
+    if (fs.existsSync(this.accountsPath)) {
+      try {
+        const accounts = JSON.parse(
+          fs.readFileSync(this.accountsPath, "utf-8")
+        );
+        if (Array.isArray(accounts) && accounts.length > 0) {
+          lastPhone = accounts[accounts.length - 1];
+          console.log(`📂 Đọc được account cuối: ${lastPhone}`);
+        }
+      } catch (err) {
+        console.warn("⚠️ Không đọc được account.json:", err.message);
+      }
+    }
+
+    // Nếu có lastPhone thì tính offset cho currentAccount
+    if (lastPhone) {
+      const baseNum = BigInt(basePhone.slice(1));
+      const lastNum = BigInt(lastPhone.slice(1));
+      const diff = lastNum - baseNum + BigInt(1); // +1 để tiếp tục số mới
+      this.currentAccount = Number(diff);
+      console.log(`➡️ Tiếp tục từ account tiếp theo (${this.currentAccount})`);
+    } else {
+      this.currentAccount = 0;
+      console.log(`🆕 Chạy mới từ đầu số: ${basePhone}`);
+    }
+
+    // 🌀 Loop vô hạn
     while (true) {
       try {
-        // Tạo số điện thoại hiện tại
+        // Sinh số điện thoại hiện tại
         const currentPhone = this.generateNextPhone(basePhone);
 
         // Xử lý tài khoản
@@ -375,7 +407,7 @@ class SimpleGameBot {
         console.error(`💥 Lỗi không mong muốn:`, error.message);
         console.log(`🔄 Tiếp tục với tài khoản tiếp theo...\n`);
         this.currentAccount++;
-        await this.sleep(0);
+        await this.sleep(1);
       }
     }
   }
