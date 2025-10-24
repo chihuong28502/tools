@@ -345,7 +345,7 @@ class SimpleGameBot {
 // Main - Chạy ngay khi start file
 // 🚀 Main
 async function main() {
-  const BASE_PHONE = process.env.BASE_PHONE || "0980000000";
+  const BASE_PHONE = process.env.BASE_PHONE;
   console.log(`📱 Base phone: ${BASE_PHONE}`);
   const bot = new SimpleGameBot(BASE_PHONE);
   await bot.runForever(BASE_PHONE);
