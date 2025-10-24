@@ -203,10 +203,17 @@ class SimpleGameBot {
             withCredentials: true,
           }
         );
+
+        const data = response.data;
+        if (data.error_code === 0) {
+          const message = data.message;
+          arrMessages.messages.push(message);
+        }
       } catch (error) {
         console.log(`  ❌ Game ${i} lỗi`);
       }
     }
+    console.log(`  🎯 Kết quả game:`, arrMessages);
 
     // --- đọc file winners & account ---
     const accountsPath = "./account.json";
@@ -283,7 +290,11 @@ class SimpleGameBot {
         if (!exists) {
           winners.push(userInfo);
         }
-        fs.writeFileSync(this.winnersPath, JSON.stringify(winners, null, 2), "utf-8");
+        fs.writeFileSync(
+          this.winnersPath,
+          JSON.stringify(winners, null, 2),
+          "utf-8"
+        );
       }
     } catch (error) {
       console.log(`❌ History lỗi`, error);
