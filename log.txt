@@ -60,3 +60,26 @@
 [    1177.315967] EV_SYN       SYN_REPORT           00000000            
 
 09891 09892
+
+BASE_PHONE=0910102578 pm2 start simple-bot.js --name bot_091010
+BASE_PHONE=0921112574 pm2 start simple-bot.js --name bot_092111
+BASE_PHONE=0932122566 pm2 start simple-bot.js --name bot_093212
+BASE_PHONE=0943132584 pm2 start simple-bot.js --name bot_094313 
+BASE_PHONE=0954142595 pm2 start simple-bot.js --name bot_095414 
+BASE_PHONE=0965152518 pm2 start simple-bot.js --name bot_096515 
+BASE_PHONE=0976162530 pm2 start simple-bot.js --name bot_097616 
+BASE_PHONE=0987172567 pm2 start simple-bot.js --name bot_098717 
+BASE_PHONE=0998182585 pm2 start simple-bot.js --name bot_099818 
+BASE_PHONE=0909192575 pm2 start simple-bot.js --name bot_090919
+
+
+BASE_PHONE=0319192597 pm2 start simple-bot.js --name bot_031919 
+BASE_PHONE=0329282573 pm2 start simple-bot.js --name bot_032928 
+BASE_PHONE=0339372553 pm2 start simple-bot.js --name bot_033937 
+BASE_PHONE=0349462598 pm2 start simple-bot.js --name bot_034946 
+BASE_PHONE=0359552557 pm2 start simple-bot.js --name bot_035955 
+BASE_PHONE=0369642604 pm2 start simple-bot.js --name bot_036964 
+BASE_PHONE=0379732558 pm2 start simple-bot.js --name bot_037973 
+BASE_PHONE=0389822572 pm2 start simple-bot.js --name bot_038982 
+BASE_PHONE=0399912570 pm2 start simple-bot.js --name bot_039991 
+BASE_PHONE=0389002559 pm2 start simple-bot.js --name bot_038900
