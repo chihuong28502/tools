@@ -409,7 +409,7 @@ class SimpleGameBot {
 
 // Main - Chạy ngay khi start file
 async function main() {
-  const BASE_PHONE = "0912935112"; // Thay số điện thoại của bạn ở đây
+  const BASE_PHONE = "0912936637"; // Thay số điện thoại của bạn ở đây
   console.log(`📱 Số điện thoại base: ${BASE_PHONE}`);
   const bot = new SimpleGameBot();
   await bot.runForever(BASE_PHONE);
