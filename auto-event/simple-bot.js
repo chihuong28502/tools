@@ -221,16 +221,25 @@ class SimpleGameBot {
       }
     }
 
+      if (fs.existsSync(pathAccount)) {
+      try {
+        accounts = JSON.parse(fs.readFileSync(pathAccount, "utf-8"));
+      } catch {
+        accounts = [];
+      }
+    }
+
     // Thêm user mới nếu chưa có
     if (arrMessages.messages.length > 0) {
       winners.push(arrMessages);
     }
-    accounts.push(username);
+    if (!accounts.includes(username)) {
+      accounts.push(username);
+    }
 
-    // Ghi lại file JSON
-    fs.writeFileSync(path, JSON.stringify(winners, null, 2), "utf-8");
+    // Ghi lại file JSON    
     fs.writeFileSync(pathAccount, JSON.stringify(accounts, null, 2), "utf-8");
-
+    fs.writeFileSync(path, JSON.stringify(winners, null, 2), "utf-8");
     console.log(
       `🎉 User ${arrMessages.username} có quà! Đã lưu vào winners.json`
     );
