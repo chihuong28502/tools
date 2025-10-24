@@ -203,7 +203,6 @@ class SimpleGameBot {
         if (data && data.message.includes("lịch sử")) {
           arrMessages.messages.push(data.message);
         }
-        arrMessages.messages.push(data.message);
         await this.sleep(0);
       } catch (error) {
         console.log(`  ❌ Game ${i} lỗi`);
