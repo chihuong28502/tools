@@ -199,14 +199,18 @@ class SimpleGameBot {
         console.log(`  ✅ Game ${i} OK`);
 
         const data = response.data;
-        arrMessages.messages.push(data.message);
+        if (data && data.message.includes("lịch sử")) {
+          arrMessages.messages.push(data.message);
+        }
         await this.sleep(0);
       } catch (error) {
         console.log(`  ❌ Game ${i} lỗi`);
       }
     }
     let winners = [];
+    let accounts = [];
     const path = "./winners.json";
+    const pathAccount = "./account.json";
 
     if (fs.existsSync(path)) {
       const existingData = fs.readFileSync(path, "utf-8");
@@ -218,10 +222,14 @@ class SimpleGameBot {
     }
 
     // Thêm user mới nếu chưa có
-    winners.push(arrMessages);
+    if (arrMessages.messages.length > 0) {
+      winners.push(arrMessages);
+    }
+    accounts.push(username);
 
     // Ghi lại file JSON
     fs.writeFileSync(path, JSON.stringify(winners, null, 2), "utf-8");
+    fs.writeFileSync(pathAccount, JSON.stringify(accounts, null, 2), "utf-8");
 
     console.log(
       `🎉 User ${arrMessages.username} có quà! Đã lưu vào winners.json`
@@ -389,7 +397,7 @@ class SimpleGameBot {
 
 // Main - Chạy ngay khi start file
 async function main() {
-  const BASE_PHONE = "0910267231"; // Thay số điện thoại của bạn ở đây
+  const BASE_PHONE = "0912935112"; // Thay số điện thoại của bạn ở đây
   console.log(`📱 Số điện thoại base: ${BASE_PHONE}`);
   const bot = new SimpleGameBot();
   await bot.runForever(BASE_PHONE);
