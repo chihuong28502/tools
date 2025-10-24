@@ -152,8 +152,6 @@ class SimpleGameBot {
 
     for (const type of eventTypes) {
       try {
-        console.log(`  📝 Event type ${type}...`);
-
         await axios.post(
           `${this.baseURL}/join-event`,
           `type=${type}&authId=${this.authId}`,
@@ -171,7 +169,6 @@ class SimpleGameBot {
         );
 
         console.log(`  ✅ Event ${type} OK`);
-        await this.sleep(200);
       } catch (error) {
         console.log(`  ❌ Event ${type} lỗi`);
       }
@@ -206,30 +203,14 @@ class SimpleGameBot {
             withCredentials: true,
           }
         );
-
-        console.log(`  ✅ Game ${i} OK`);
-        const data = response.data;
-
-        arrMessages.messages.push(data.message);
       } catch (error) {
         console.log(`  ❌ Game ${i} lỗi`);
       }
     }
 
     // --- đọc file winners & account ---
-    const winnersPath = "./winners.json";
     const accountsPath = "./account.json";
-
-    let winners = [];
     let accounts = [];
-
-    if (fs.existsSync(this.winnersPath)) {
-      try {
-        winners = JSON.parse(fs.readFileSync(this.winnersPath, "utf-8"));
-      } catch {
-        winners = [];
-      }
-    }
 
     if (fs.existsSync(this.accountsPath)) {
       try {
@@ -237,13 +218,6 @@ class SimpleGameBot {
       } catch {
         accounts = [];
       }
-    }
-
-    // --- nếu user có quà thì mới push vào winners ---
-    if (arrMessages.messages.length > 0) {
-      winners.push(arrMessages);
-      fs.writeFileSync(this.winnersPath, JSON.stringify(winners, null, 2), "utf-8");
-      console.log(`🎉 User ${username} có quà! Đã lưu vào winners.json`);
     }
 
     // --- lưu tất cả username đã chạy vào account.json ---
@@ -254,6 +228,66 @@ class SimpleGameBot {
         JSON.stringify(accounts, null, 2),
         "utf-8"
       );
+    }
+  }
+
+  async getHistory(username) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/history`,
+        {
+          access_token: this.accessToken,
+          auth_id: this.authId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${this.accessToken}`,
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "X-CSRF-TOKEN": this.csrfToken,
+            Cookie: this.cookies,
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(`✅ History OK`);
+
+      if (
+        response.data &&
+        (response.data.data?.gift?.length > 0 ||
+          response.data.data?.rewards?.length > 0)
+      ) {
+        // Tạo object lưu thông tin user
+        const userInfo = {
+          username: username,
+          time: new Date().toISOString(),
+          gift: response.data.data?.gift || [],
+          rewards: response.data.data?.rewards || [],
+        };
+
+        // Đọc file winners.json nếu có
+        let winners = [];
+        if (fs.existsSync(this.winnersPath)) {
+          const existingData = fs.readFileSync(this.winnersPath, "utf-8");
+          try {
+            winners = JSON.parse(existingData);
+          } catch {
+            winners = [];
+          }
+        }
+
+        // Thêm user mới nếu chưa có
+        const exists = winners.find((u) => u.username === userInfo.username);
+        if (!exists) {
+          winners.push(userInfo);
+        }
+        fs.writeFileSync(this.winnersPath, JSON.stringify(winners, null, 2), "utf-8");
+      }
+    } catch (error) {
+      console.log(`❌ History lỗi`, error);
+      return null;
     }
   }
 
@@ -285,10 +319,11 @@ class SimpleGameBot {
     // 3. Play Game
     console.log(`🎯 [${username}] Chơi game...`);
     await this.playGame(username);
+    await this.sleep(500);
 
     // 4. Get History
-    // console.log(`📜 [${username}] Lấy lịch sử...`);
-    // await this.getHistory(username);
+    console.log(`📜 [${username}] Lấy lịch sử...`);
+    await this.getHistory(username);
 
     console.log(`🎉 [${username}] Hoàn thành!\n`);
     return true;
@@ -324,12 +359,12 @@ class SimpleGameBot {
 
         // Nghỉ giữa các tài khoản
         console.log(`⏸️ Nghỉ 2 giây trước tài khoản tiếp theo...\n`);
-        await this.sleep(500);
+        await this.sleep(200);
       } catch (error) {
         console.error(`💥 Lỗi không mong muốn:`, error.message);
         console.log(`🔄 Tiếp tục với tài khoản tiếp theo...\n`);
         this.currentAccount++;
-        await this.sleep(1000);
+        await this.sleep(0);
       }
     }
   }
