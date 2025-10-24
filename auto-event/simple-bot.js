@@ -173,79 +173,80 @@ class SimpleGameBot {
    * Chơi game 8 lần
    */
   async playGame(username) {
-  const arrMessages = {
-    username,
-    messages: [],
-  };
+    const arrMessages = {
+      username,
+      messages: [],
+    };
 
-  // --- chạy 8 game ---
-  for (let i = 1; i <= 8; i++) {
-    try {
-      console.log(`  🎲 Game ${i}/8...`);
-      const response = await axios.post(
-        `${this.baseURL}/play-game2`,
-        `auth_id=${this.authId}&access_token=${this.accessToken}&shots=1`,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${this.accessToken}`,
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "X-CSRF-TOKEN": this.csrfToken,
-            Cookie: this.cookies,
-          },
-          withCredentials: true,
-        }
-      );
+    // --- chạy 8 game ---
+    for (let i = 1; i <= 8; i++) {
+      try {
+        console.log(`  🎲 Game ${i}/8...`);
+        const response = await axios.post(
+          `${this.baseURL}/play-game2`,
+          `auth_id=${this.authId}&access_token=${this.accessToken}&shots=1`,
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Bearer ${this.accessToken}`,
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              "X-CSRF-TOKEN": this.csrfToken,
+              Cookie: this.cookies,
+            },
+            withCredentials: true,
+          }
+        );
 
-      console.log(`  ✅ Game ${i} OK`);
-      const data = response.data;
+        console.log(`  ✅ Game ${i} OK`);
+        const data = response.data;
 
-      if (data?.message?.includes("lịch sử")) {
         arrMessages.messages.push(data.message);
+      } catch (error) {
+        console.log(`  ❌ Game ${i} lỗi`);
       }
-    } catch (error) {
-      console.log(`  ❌ Game ${i} lỗi`);
+    }
+
+    // --- đọc file winners & account ---
+    const winnersPath = "./winners.json";
+    const accountsPath = "./account.json";
+
+    let winners = [];
+    let accounts = [];
+
+    if (fs.existsSync(winnersPath)) {
+      try {
+        winners = JSON.parse(fs.readFileSync(winnersPath, "utf-8"));
+      } catch {
+        winners = [];
+      }
+    }
+
+    if (fs.existsSync(accountsPath)) {
+      try {
+        accounts = JSON.parse(fs.readFileSync(accountsPath, "utf-8"));
+      } catch {
+        accounts = [];
+      }
+    }
+
+    // --- nếu user có quà thì mới push vào winners ---
+    if (arrMessages.messages.length > 0) {
+      winners.push(arrMessages);
+      fs.writeFileSync(winnersPath, JSON.stringify(winners, null, 2), "utf-8");
+      console.log(`🎉 User ${username} có quà! Đã lưu vào winners.json`);
+    }
+
+    // --- lưu tất cả username đã chạy vào account.json ---
+    if (!accounts.includes(username)) {
+      accounts.push(username);
+      fs.writeFileSync(
+        accountsPath,
+        JSON.stringify(accounts, null, 2),
+        "utf-8"
+      );
     }
   }
-
-  // --- đọc file winners & account ---
-  const winnersPath = "./winners.json";
-  const accountsPath = "./account.json";
-
-  let winners = [];
-  let accounts = [];
-
-  if (fs.existsSync(winnersPath)) {
-    try {
-      winners = JSON.parse(fs.readFileSync(winnersPath, "utf-8"));
-    } catch {
-      winners = [];
-    }
-  }
-
-  if (fs.existsSync(accountsPath)) {
-    try {
-      accounts = JSON.parse(fs.readFileSync(accountsPath, "utf-8"));
-    } catch {
-      accounts = [];
-    }
-  }
-
-  // --- nếu user có quà thì mới push vào winners ---
-  if (arrMessages.messages.length > 0) {
-    winners.push(arrMessages);
-    fs.writeFileSync(winnersPath, JSON.stringify(winners, null, 2), "utf-8");
-    console.log(`🎉 User ${username} có quà! Đã lưu vào winners.json`);
-  }
-
-  // --- lưu tất cả username đã chạy vào account.json ---
-  if (!accounts.includes(username)) {
-    accounts.push(username);
-    fs.writeFileSync(accountsPath, JSON.stringify(accounts, null, 2), "utf-8");
-  }
-}
-
 
   /**
    * Lấy lịch sử
@@ -408,7 +409,7 @@ class SimpleGameBot {
 
 // Main - Chạy ngay khi start file
 async function main() {
-  const BASE_PHONE = "0910267573"; // Thay số điện thoại của bạn ở đây
+  const BASE_PHONE = "0950267573"; // Thay số điện thoại của bạn ở đây
   console.log(`📱 Số điện thoại base: ${BASE_PHONE}`);
   const bot = new SimpleGameBot();
   await bot.runForever(BASE_PHONE);
