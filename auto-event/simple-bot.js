@@ -307,16 +307,16 @@ class SimpleGameBot {
     try {
       const response = await axios.post(
         `${this.baseURL}/get-code`,
-        `type=8&authId=${this.authId}`,
+        new URLSearchParams({
+          authId: this.authId,
+          type: 8,
+        }),
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "X-CSRF-TOKEN": this.csrfToken,
             Cookie: this.cookies,
+            "X-XSRF-TOKEN": this.csrfToken,
           },
-          withCredentials: true,
         }
       );
       console.log("🚀 ~ SimpleGameBot ~ getCodeFana ~ response:", response);
