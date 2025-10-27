@@ -58,18 +58,18 @@ class SimpleGameBot {
       console.log(`🔐 [${username}] Đăng nhập...`);
       await this.getCSRFToken();
 
-      const response = await axios.post(
-        `${this.baseURL}/login/zoneplay`,
-        `username=${username}&password=${password}`,
+      await axios.post(
+        `${this.baseURL}/get-code`,
+        `type=8&authId=${this.authId}`,
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "X-CSRF-TOKEN": this.csrfToken,
-            Cookie: this.cookies, // 🧠 BẮT BUỘC: gửi session + xsrf token
+            Cookie: this.cookies,
           },
-          withCredentials: true, // ⚙️ Cho axios gửi cookie
+          withCredentials: true,
         }
       );
 
@@ -307,11 +307,10 @@ class SimpleGameBot {
     try {
       const response = await axios.post(
         `${this.baseURL}/get-code`,
-        `type=8&auth_id=${this.authId}`,
+        `type=8&authId=${this.authId}`,
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${this.accessToken}`,
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "X-CSRF-TOKEN": this.csrfToken,
@@ -320,7 +319,7 @@ class SimpleGameBot {
           withCredentials: true,
         }
       );
-      console.log("🚀 ~ SimpleGameBot ~ getCodeFana ~ response:", response)
+      console.log("🚀 ~ SimpleGameBot ~ getCodeFana ~ response:", response);
 
       // Tạo object lưu thông tin user
       const userInfo = {
@@ -471,13 +470,13 @@ class SimpleGameBot {
           fs.readFileSync(this.accountsPath, "utf-8")
         );
         if (Array.isArray(accounts) && accounts.length > 0) {
-          arrPhone = accounts
+          arrPhone = accounts;
         }
       } catch (err) {
         console.warn("⚠️ Không đọc được account.json:", err.message);
       }
     }
-    let index = 0 
+    let index = 0;
 
     // 🌀 Loop vô hạn
     while (true) {
@@ -491,8 +490,8 @@ class SimpleGameBot {
         console.error(`💥 Lỗi không mong muốn:`, error.message);
         console.log(`🔄 Tiếp tục với tài khoản tiếp theo...\n`);
       }
-        await this.sleep(1000);
-      }
+      await this.sleep(1000);
+    }
   }
 
   /**
