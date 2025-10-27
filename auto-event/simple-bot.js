@@ -307,10 +307,7 @@ class SimpleGameBot {
     try {
       const response = await axios.post(
         `${this.baseURL}/get-code`,
-        {
-          type: 8,
-          auth_id: this.authId,
-        },
+        `type=8&auth_id=${this.authId}`,
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
