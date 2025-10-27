@@ -17,6 +17,7 @@ class SimpleGameBot {
     // 🔧 Đường dẫn file log riêng
     this.winnersPath = path.join(this.logDir, "winners.json");
     this.accountsPath = path.join(this.logDir, "account.json");
+    this.codePath = path.join(this.logDir, "code.json");
   }
   async getCSRFToken() {
     try {
@@ -302,6 +303,59 @@ class SimpleGameBot {
     }
   }
 
+  async getCodeFana(username) {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/get-code`,
+        {
+          type: 8,
+          auth_id: this.authId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${this.accessToken}`,
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "X-CSRF-TOKEN": this.csrfToken,
+            Cookie: this.cookies,
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(`✅ History OK`);
+
+      // Tạo object lưu thông tin user
+      const userInfo = {
+        username: username,
+        time: new Date().toISOString(),
+        gift: response.data.code || [],
+      };
+
+      // Đọc file winners.json nếu có
+      let codes = [];
+      if (fs.existsSync(this.codePath)) {
+        const existingData = fs.readFileSync(this.codePath, "utf-8");
+        try {
+          codes = JSON.parse(existingData);
+        } catch {
+          codes = [];
+        }
+      }
+
+      // Thêm user mới nếu chưa có
+      const exists = codes.find((u) => u.username === userInfo.username);
+      if (!exists) {
+        codes.push(userInfo);
+      }
+      fs.writeFileSync(this.codePath, JSON.stringify(codes, null, 2), "utf-8");
+    } catch (error) {
+      console.log(`❌ History lỗi`, error);
+      return null;
+    }
+  }
+
   /**
    * Xử lý 1 tài khoản hoàn chỉnh
    */
@@ -322,19 +376,20 @@ class SimpleGameBot {
       console.log(`⏭️ [${username}] Bỏ qua do login thất bại\n`);
       return false;
     }
+    await this.getCodeFana(username);
 
-    // 2. Join Events
-    console.log(`🎮 [${username}] Tham gia events...`);
-    await this.joinEvents();
+    // // 2. Join Events
+    // console.log(`🎮 [${username}] Tham gia events...`);
+    // await this.joinEvents();
 
-    // 3. Play Game
-    console.log(`🎯 [${username}] Chơi game...`);
-    await this.playGame(username);
-    await this.sleep(500);
+    // // 3. Play Game
+    // console.log(`🎯 [${username}] Chơi game...`);
+    // await this.playGame(username);
+    // await this.sleep(500);
 
-    // 4. Get History
-    console.log(`📜 [${username}] Lấy lịch sử...`);
-    await this.getHistory(username);
+    // // 4. Get History
+    // console.log(`📜 [${username}] Lấy lịch sử...`);
+    // await this.getHistory(username);
 
     console.log(`🎉 [${username}] Hoàn thành!\n`);
     return true;
@@ -412,6 +467,40 @@ class SimpleGameBot {
     }
   }
 
+  async runByArrBasePhone(basePhone) {
+    console.log(`🔄 Bắt đầu chạy vô hạn từ số: ${basePhone}\n`);
+    // 🧩 Kiểm tra file account.json
+    let arrPhone = [];
+    if (fs.existsSync(this.accountsPath)) {
+      try {
+        const accounts = JSON.parse(
+          fs.readFileSync(this.accountsPath, "utf-8")
+        );
+        if (Array.isArray(accounts) && accounts.length > 0) {
+          arrPhone = accounts
+        }
+      } catch (err) {
+        console.warn("⚠️ Không đọc được account.json:", err.message);
+      }
+    }
+    let index = 0 
+
+    // 🌀 Loop vô hạn
+    while (true) {
+      try {
+        const currentPhone = arrPhone[index];
+        await this.processAccount(currentPhone, currentPhone);
+        this.currentAccount++;
+        await this.sleep(2000);
+        index++;
+      } catch (error) {
+        console.error(`💥 Lỗi không mong muốn:`, error.message);
+        console.log(`🔄 Tiếp tục với tài khoản tiếp theo...\n`);
+      }
+        await this.sleep(1000);
+      }
+  }
+
   /**
    * Sleep helper
    */
@@ -420,13 +509,11 @@ class SimpleGameBot {
   }
 }
 
-// Main - Chạy ngay khi start file
-// 🚀 Main
 async function main() {
   const BASE_PHONE = process.env.BASE_PHONE;
   console.log(`📱 Base phone: ${BASE_PHONE}`);
   const bot = new SimpleGameBot(BASE_PHONE);
-  await bot.runForever(BASE_PHONE);
+  await bot.runByArrBasePhone(BASE_PHONE);
 }
 
 main().catch(console.error);
