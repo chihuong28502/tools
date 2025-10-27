@@ -323,13 +323,11 @@ class SimpleGameBot {
           withCredentials: true,
         }
       );
-
-      console.log(`✅ History OK`);
+      console.log("🚀 ~ SimpleGameBot ~ getCodeFana ~ response:", response)
 
       // Tạo object lưu thông tin user
       const userInfo = {
         username: username,
-        time: new Date().toISOString(),
         gift: response.data.code || [],
       };
 
@@ -351,8 +349,7 @@ class SimpleGameBot {
       }
       fs.writeFileSync(this.codePath, JSON.stringify(codes, null, 2), "utf-8");
     } catch (error) {
-      console.log(`❌ History lỗi`, error);
-      return null;
+      throw new Error(`❌ Lỗi lấy code: ${error.message}`);
     }
   }
 
