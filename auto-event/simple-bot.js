@@ -363,12 +363,12 @@ class SimpleGameBot {
     console.log(`\n🚀 [${username}] Bắt đầu xử lý...`);
 
     // 0. Register
-    console.log(`📝 [${username}] Đăng ký tài khoản...`);
-    const registerSuccess = await this.register(username, password);
-    if (!registerSuccess) {
-      console.log(`⏭️ [${username}] Bỏ qua do đăng ký thất bại\n`);
-      return false;
-    }
+    // console.log(`📝 [${username}] Đăng ký tài khoản...`);
+    // const registerSuccess = await this.register(username, password);
+    // if (!registerSuccess) {
+    //   console.log(`⏭️ [${username}] Bỏ qua do đăng ký thất bại\n`);
+    //   return false;
+    // }
 
     // 1. Login
     const loginSuccess = await this.login(username, password);
