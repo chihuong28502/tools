@@ -122,9 +122,11 @@ const axios = require("axios");
 const { CookieJar } = require("tough-cookie");
 const { wrapper } = require("axios-cookiejar-support");
 
+const MASK_LENGTH = parseInt(process.env.LOG_TOKEN_MASK_LENGTH || "4", 10);
+
 function maskToken(token) {
   if (!token) return "(none)";
-  return token.substring(0, 6) + "...";
+  return token.substring(0, MASK_LENGTH) + "...";
 }
 
 function createHttpClient() {
@@ -164,15 +166,22 @@ class StateStore {
     if (!fs.existsSync(this.filePath)) return [];
     try {
       return JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-    } catch {
+    } catch (err) {
+      // Distinguish missing file (expected) from corrupted JSON or permission errors (unexpected)
+      if (err.code === "ENOENT") return [];
+      console.error(`[StateStore] Failed to read ${this.filePath}:`, err.message);
       return [];
     }
   }
 
   _write(data) {
-    const tmp = path.join(os.tmpdir(), `state-${Date.now()}.tmp`);
+    const { randomBytes } = require("crypto");
+    const tmp = path.join(os.tmpdir(), `state-${randomBytes(8).toString("hex")}.tmp`);
     fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf-8");
-    fs.renameSync(tmp, this.filePath); // atomic on POSIX
+    // fs.renameSync is atomic on POSIX; on Windows it may not be — use a
+    // platform-aware atomic-write library (e.g. `write-file-atomic`) for
+    // cross-platform deployments.
+    fs.renameSync(tmp, this.filePath);
   }
 
   append(entry) {
@@ -207,7 +216,7 @@ module.exports = { StateStore };
    constructor() {
 -    this.baseURL = "https://psha.zoneplay.vn/g38";
 +    this.baseURL = config.baseURL;
-
+ 
 @@ -92,7 +94,7 @@ class SimpleGameBot {
          username: username,
          password: password,
@@ -216,8 +225,8 @@ module.exports = { StateStore };
 -        app_key: "2561e0097cc44fd571424f792fa35e48",
 +        app_key: config.appKey,
          rules: 1,
-
-@@ -411,7 +413,7 @@ async function main() {
+ 
+@@ -411,3 +413,5 @@ async function main() {
 -  const BASE_PHONE = "0912936637";
 +  const BASE_PHONE = config.basePhone;
 +  if (!BASE_PHONE) throw new Error("BASE_PHONE env variable is required");
@@ -240,6 +249,9 @@ BASE_PHONE=09xxxxxxxxx
 CONCURRENCY=5
 DELAY_BETWEEN_ACCOUNTS_MS=500
 RETRY_ATTEMPTS=3
+
+# Logging — number of leading characters to expose when masking tokens (default 4)
+LOG_TOKEN_MASK_LENGTH=4
 ```
 
 ### `auto-event/Dockerfile` (new file)
@@ -251,7 +263,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY . .
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD node -e "process.exit(0)" || exit 1
+  CMD node -e "require('fs').accessSync('./data', require('fs').constants.R_OK | require('fs').constants.W_OK)" || exit 1
 CMD ["node", "simple-bot.js"]
 ```
 
